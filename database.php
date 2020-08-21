@@ -4,14 +4,17 @@ class Database
 {
 
     //database credentials
-    // private $host = "sql203.epizy.com";
-    // private $dbName = "epiz_26551805_panwatch";
-    // private $username = "epiz_26551805";
-    // private $password = "0vDESY4bdT";
-    private $host = "localhost";
-    private $dbName = "panwatch";
-    private $username = "root";
-    private $password = "";
+    //production
+    private $host = "remotemysql.com";
+    private $dbName = "lxvQFMRUq9";
+    private $username = "lxvQFMRUq9";
+    private $password = "LaNDjGu7p1";
+
+    //local dev
+    // private $host = "localhost";
+    // private $dbName = "panwatch";
+    // private $username = "root";
+    // private $password = "";
     private $charset = 'utf8mb4';
     public $conn;
 
