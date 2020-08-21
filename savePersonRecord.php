@@ -55,8 +55,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $records->contactInfo   = $data->contactInfo;
     $records->address       = $data->address;
     $records->type          = 1;
-
-    print_r($records);
+    
     // make sure data is not empty
     if(
         !empty($records->name) &&

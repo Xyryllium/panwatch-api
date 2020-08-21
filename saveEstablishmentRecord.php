@@ -34,10 +34,28 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $records->location              = $data->location;
     $records->dateContacted         = date('Y-m-d h:i:s', strtotime($data->dateContacted));
     $records->timeContacted         = date('Y-m-d h:i:s', strtotime($data->timeContacted));
-    $records->hasFacemask           = $data->hasFacemask;
-    $records->hasFaceshield         = $data->hasFaceshield;
-    $records->hasSocialDistancing   = $data->hasSocialDistancing;
-    $records->hasTemperatureCheck   = $data->hasTemperatureCheck;
+    if($data->hasFacemask == true){
+        $records->hasFacemask = 1;
+    }
+    else
+        $records->hasFacemask = 0;
+    
+    if($data->hasFaceshield == true){
+        $records->hasFaceshield = 1;
+    }
+    else
+        $records->hasFaceshield = 0;
+    if($data->hasSocialDistancing == true){
+        $records->hasSocialDistancing = 1;
+    }
+    else
+        $records->hasSocialDistancing = 0;
+    
+    if($data->hasTemperatureCheck == true){
+        $records->hasTemperatureCheck = 1;
+    }
+    else
+        $records->hasTemperatureCheck = 0;
     $records->duration              = $data->duration;
     $records->contactInfo           = $data->contactInfo;
     $records->type                  = 2;
