@@ -38,8 +38,19 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $records->location      = $data->location;
     $records->dateContacted = date('Y-m-d h:i:s', strtotime($data->dateContacted));
     $records->timeContacted = date('Y-m-d h:i:s', strtotime($data->timeContacted));
-    $records->hasFacemask   = $data->hasFacemask;
-    $records->hasFaceshield = $data->hasFaceshield;
+    
+    if($data->hasFacemask == true){
+        $records->hasFacemask = 1;
+    }
+    else
+        $records->hasFacemask = 0;
+    
+    if($data->hasFaceshield == true){
+        $records->hasFaceshield = 1;
+    }
+    else
+        $records->hasFaceshield = 0;
+
     $records->duration      = $data->duration;
     $records->contactInfo   = $data->contactInfo;
     $records->address       = $data->address;
