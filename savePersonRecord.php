@@ -45,6 +45,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $records->address       = $data->address;
     $records->type          = 1;
 
+    print_r($records->createRecord());
     // make sure data is not empty
     if(
         !empty($records->name) &&
