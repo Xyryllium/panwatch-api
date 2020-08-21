@@ -67,8 +67,11 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
                 
                 }else{
-                    http_response_code(503);
-                    echo json_encode(array('message' => "Unable to create contact record."));
+                    end($data->attendees);
+                    if ($row === key($data->attendees)){
+                        http_response_code(503);
+                        echo json_encode(array('message' => "Unable to create contact record."));
+                    }
                 }
             }
             else{
