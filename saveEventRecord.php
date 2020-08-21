@@ -32,8 +32,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
     $records->name                  = $data->name;
     $records->location              = $data->location;
-    $records->dateContacted         = $data->dateContacted;
-    $records->timeContacted         = $data->timeContacted;
+    $records->dateContacted         = date('Y-m-d h:i:s', strtotime($data->dateContacted));
+    $records->timeContacted         = date('Y-m-d h:i:s', strtotime($data->timeContacted));
     $records->hasFacemask           = $data->hasFacemask;
     $records->hasFaceshield         = $data->hasFaceshield;
     $records->hasSocialDistancing   = $data->hasSocialDistancing;
