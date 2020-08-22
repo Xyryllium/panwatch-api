@@ -5,6 +5,9 @@ use \Firebase\JWT\JWT;
 header("Access-Control-Allow-Origin: *");
 header("Access-Control-Allow-Methods: POST");
 header("Content-Type: application/json; charset=UTF-8");
+header("Access-Control-Max-Age: 3600");
+header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
+
 
 // files needed to connect to database
 include_once 'database.php';
@@ -21,9 +24,19 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $data = json_decode(file_get_contents("php://input"));
     try{
         $secret_key = "owt125";
-        $jwt = JWT::decode($data->id, $secret_key,  array('HS512'));
+        $jwt = null;
 
-        $records->id = $jwt->data->id;
+        $headers = apache_request_headers();
+
+        $arr = explode(" ", $headers["Authorization"]);
+
+        $jwt = $arr[1];
+
+        if($jwt){
+            $jwt = JWT::decode($jwt, $secret_key,  array('HS512'));
+    
+            $records->id = $jwt->data->id;
+        }
 
     }catch(Exception $ex){
         http_response_code(500);
