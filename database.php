@@ -5,16 +5,16 @@ class Database
 
     //database credentials
     //production
-    // private $host = "remotemysql.com";
-    // private $dbName = "lxvQFMRUq9";
-    // private $username = "lxvQFMRUq9";
-    // private $password = "LaNDjGu7p1";
+    private $host = "remotemysql.com";
+    private $dbName = "lxvQFMRUq9";
+    private $username = "lxvQFMRUq9";
+    private $password = "LaNDjGu7p1";
 
     //local dev
-    private $host = "localhost";
-    private $dbName = "panwatch";
-    private $username = "root";
-    private $password = "";
+    // private $host = "localhost";
+    // private $dbName = "panwatch";
+    // private $username = "root";
+    // private $password = "";
     private $charset = 'utf8mb4';
     public $conn;
 
