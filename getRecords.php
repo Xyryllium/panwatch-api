@@ -53,7 +53,6 @@ if($_SERVER['REQUEST_METHOD'] === "GET"){
     
         while($data = $result->fetch(PDO::FETCH_ASSOC)){
             $data_info[] = $data;
-    
         }
         http_response_code(200);
         //convert to JSON output

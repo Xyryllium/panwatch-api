@@ -1,6 +1,8 @@
 {
     "require": {
         "cloudinary/cloudinary_php": "dev-master",
-        "firebase/php-jwt": "^5.2"
+        "firebase/php-jwt": "^5.2",
+        "sendgrid/sendgrid": "~7"
+
     }
 }

@@ -60,7 +60,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     
             http_response_code(201);
             //convert to JSON output
-            echo json_encode(array('message' => "Uploaded Avatar!"));
+            echo json_encode(array('url' => $cloud["secure_url"]));
         }else{
             http_response_code(503);
             echo json_encode(array('message' => "Unable to upload avatar."));

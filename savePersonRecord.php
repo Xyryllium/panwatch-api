@@ -73,9 +73,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         !empty($records->id) &&
         !empty($records->dateContacted) &&
         !empty($records->timeContacted) &&
-        !empty($records->duration) &&
-        !empty($records->contactInfo) &&
-        !empty($records->address)
+        !empty($records->duration) 
     ){
         if($records->createRecord()){
 

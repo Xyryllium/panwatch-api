@@ -4,7 +4,7 @@ use \Firebase\JWT\JWT;
 // required headers
 header("Access-Control-Allow-Origin: *");
 header("Content-Type: application/json; charset=UTF-8");
-header("Access-Control-Allow-Methods: POST");
+header("Access-Control-Allow-Methods: PUT");
 header("Access-Control-Max-Age: 3600");
 header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers, Authorization, X-Requested-With");
 
@@ -19,7 +19,7 @@ $database = new Database();
 // instantiate user object
 $user = new User($db);
 
-if($_SERVER['REQUEST_METHOD'] === "POST"){
+if($_SERVER['REQUEST_METHOD'] === "PUT"){
     $data = json_decode(file_get_contents("php://input"));
     try{
         $secret_key = "owt125";
@@ -42,20 +42,41 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
         echo json_encode(array('message' => $ex->getMessage()));
     }
 
-    if($jwt->data->name != $data->name)
+    $result = $user->readUserInfo();
+
+    while($record = $result->fetch(PDO::FETCH_ASSOC)){
+        extract($record);
+
+        $info = array(
+            "id" => $id,
+            "name" => $name,
+            "address" => $address,
+            "email" => $email,
+            "avatar" => $avatar,
+            "mobileNumber" => $mobileNumber
+        );
+        
+    }
+
+    if($info["name"] != $data->name)
         $user->name = $data->name;
     else
-        $user->name = $jwt->data->name;
+        $user->name = $info["name"];
 
-    if($jwt->data->mobileNumber != $data->mobileNumber)
+    if($info["mobileNumber"] != $data->mobileNumber)
         $user->contactInfo = $data->mobileNumber;
     else
-        $user->contactInfo = $jwt->data->mobileNumber;
+        $user->contactInfo = $info["mobileNumber"];
 
-    if($jwt->data->address != $data->address)
+    if($info["address"] != $data->address)
         $user->address = $data->address;
     else
-        $user->address = $jwt->data->address;
+        $user->address = $info["address"];
+
+    if($info["avatar"] != $data->avatar)
+        $user->avatar = $data->avatar;
+    else
+        $user->avatar = $info["avatar"];
     
     //make sure data is not empty
     if(

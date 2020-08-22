@@ -89,7 +89,19 @@ class User{
     }
 
     public function readUser(){
-        $query = "SELECT * FROM " . $this->table. " WHERE email = '" . $this->email. "' AND password = '" . $this->password ."' ";
+        $query = "SELECT * FROM " . $this->table. " WHERE email = '" . $this->email. "' ";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function readUserInfo(){
+        $query = "SELECT * FROM " . $this->table. " WHERE id = " . $this->id. " ";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);
@@ -143,7 +155,8 @@ class User{
         $query = "UPDATE " . $this->table . "
                     SET name = :name,
                     mobileNumber = :contactInfo,
-                    address = :address
+                    address = :address,
+                    avatar = :avatar
                     WHERE
                     id = :id";
 
@@ -155,12 +168,14 @@ class User{
         $this->contactInfo = htmlspecialchars(strip_tags($this->contactInfo));
         $this->address = htmlspecialchars(strip_tags($this->address));
         $this->id = htmlspecialchars(strip_tags($this->id));
+        $this->avatar = htmlspecialchars(strip_tags($this->avatar));
 
         //bind the value
         $stmt->bindParam(':id', $this->id);
         $stmt->bindParam(':contactInfo', $this->contactInfo);
         $stmt->bindParam(':address', $this->address);
         $stmt->bindParam(':name', $this->name);
+        $stmt->bindParam(':avatar', $this->avatar);
 
         //execute the query
         if($stmt->execute()){

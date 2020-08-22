@@ -19,6 +19,7 @@ class Records{
 	public $hasTemperatureCheck;
 	public $hasSocialDistancing;
 	public $attendees;
+	public $limit;
 
 
 
@@ -29,14 +30,14 @@ class Records{
 	
 	public function createRecord(){
 		$addQuery = "";
-		if(($this->type == 1)) {
-			$addQuery = ", address = :address";
+		if(($this->type == 'person')) {
+			$addQuery = "address = :address";
 		}
-        if(($this->type == 2)){
-            $addQuery = ", hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck";
+        if(($this->type == 'establishment')){
+            $addQuery = "hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck";
 		}
-		if(($this->type == 3)){
-			$addQuery = ", hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck,
+		if(($this->type == 'event')){
+			$addQuery = "hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck,
 							attendees = :attendees";
         }
         $query = "INSERT INTO " . $this->table . "
@@ -50,7 +51,8 @@ class Records{
 					hasFaceshield = :hasFaceshield,
 					duration = :duration,
 					contactInfo = :contactInfo,
-					typeId = :type{$addQuery}";
+					typeId = :type,
+					{$addQuery}";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);
@@ -77,19 +79,24 @@ class Records{
         $stmt->bindParam(':hasFaceshield', $this->hasFaceshield);
         $stmt->bindParam(':duration', $this->duration);
         $stmt->bindParam(':contactInfo', $this->contactInfo);
-		$stmt->bindParam(':type', $this->type);
 
-		if(($this->type == 1)) {
+		if(($this->type == 'person')) {
+			$type = 1;
+			$stmt->bindParam(':type', $type);
 			$this->address = htmlspecialchars(strip_tags($this->address));
 			$stmt->bindParam(':address', $this->address);
 		}
-		if(($this->type == 2)) {
+		if(($this->type == "establishment")) {
+			$type = 2;
+			$stmt->bindParam(':type', $type);
 			$this->hasSocialDistancing = htmlspecialchars(strip_tags($this->hasSocialDistancing));
 			$this->hasTemperatureCheck = htmlspecialchars(strip_tags($this->hasTemperatureCheck));
 			$stmt->bindParam(':hasSocialDistancing', $this->hasSocialDistancing);
 			$stmt->bindParam(':hasTemperatureCheck', $this->hasTemperatureCheck);
 		}
-		if(($this->type == 3)) {
+		if(($this->type == "event")) {
+			$type = 3;
+			$stmt->bindParam(':type', $type);
 			$this->hasSocialDistancing = htmlspecialchars(strip_tags($this->hasSocialDistancing));
 			$this->hasTemperatureCheck = htmlspecialchars(strip_tags($this->hasTemperatureCheck));
 			$this->attendees = htmlspecialchars(strip_tags($this->attendees));
@@ -133,6 +140,26 @@ class Records{
 					a.timeContacted,
 					b.type FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
 					ON a.typeId = b.id WHERE a.userId = "  . $this->id. " AND b.type = " . $this->type ." ";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+	}
+
+	public function readLastRecord(){
+		$query = "SELECT a.id as _id, 
+					a.name, 
+					a.location, 
+					a.dateContacted, 
+					a.timeContacted,
+					b.type 
+					FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
+					ON a.typeId = b.id
+					WHERE a.userId = ". $this->id." ORDER BY a.id DESC LIMIT " . $this->limit. " ";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);

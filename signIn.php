@@ -1,5 +1,5 @@
 <?php
-
+date_default_timezone_set('Asia/Manila');
 require './vendor/autoload.php';
 use \Firebase\JWT\JWT;
 
@@ -24,7 +24,7 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $data = json_decode(file_get_contents("php://input"));
 
     $user->email        = $data->email;
-    $user->password     = $data->password;
+    $password     = $data->password;
     
     $result = $user->readUser();
     
@@ -32,11 +32,13 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
     $num = $result->rowCount();
     
     if($num > 0){
-        $data_info = array();
+        $data_info = "";
     
         while($data = $result->fetch(PDO::FETCH_ASSOC)){
+            if(password_verify($password, $data['password'])){
+                
                 extract($data);  
-                $info = array(
+                $user = array(
                     "id" => $id,
                     "name" => $name,
                     "address" => $address,
@@ -45,9 +47,14 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                     "mobileNumber" => $mobileNumber
                 );
 
+                $info = array(
+                    "id" => $id
+                );
+
                 $iss = "localhost";
                 $iat = time();
-                $nbf = $iat + 10;
+                $datePlus1 = date('Y-m-d H:i:s', strtotime('+1 day', $iat));
+                $exp = strtotime($datePlus1);
                 $aud = "myusers";
 
                 $secret_key = "owt125";
@@ -55,18 +62,22 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                 $payload_info = array(
                     "iss" => $iss,
                     "iat" => $iat,
-                    "nbf" => $nbf,
                     "aud" => $aud,
+                    "exp" => $exp,
                     "data"=> $info
                 );
 
                 $jwt = JWT::encode($payload_info, $secret_key, 'HS512');
                 
-                $data_info [] = array("token" => $jwt, "user" => $info);
+                $data_info = ["token" => $jwt, "user" => $user];
                 
                 http_response_code(200);
                 //convert to JSON output
                 echo json_encode($data_info);
+            }else{
+                http_response_code(400);
+                echo json_encode(array('message' => 'Password does not match!'));
+            }
             
         }
         
