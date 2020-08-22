@@ -49,7 +49,7 @@ else{
             $email->setSubject("Application Password");
             $email->addTo($data->email, $data->name);
             $email->addContent("text/plain", "This is your generated password " . $generatedPassword . ". Please change after logging in to our system.");
-            $sendgrid = new \SendGrid('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');
+            $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
             try {
                 $response = $sendgrid->send($email);
             } catch (Exception $e) {
