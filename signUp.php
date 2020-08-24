@@ -1,6 +1,7 @@
 <?php
 require 'vendor/autoload.php';
 use \Firebase\JWT\JWT;
+use Mailgun\Mailgun;
 
 // required headers
 header("Access-Control-Allow-Origin: *");
@@ -44,17 +45,35 @@ else{
         !empty($user->address)
     ){
         if($user->createUser()){
-            $email = new \SendGrid\Mail\Mail(); 
-            $email->setFrom("xyaranzaaa@gmail.com", "Xyryl Aranza");
-            $email->setSubject("Application Password");
-            $email->addTo($data->email, $data->name);
-            $email->addContent("text/plain", "This is your generated password " . $generatedPassword . ". Please change after logging in to our system.");
-            $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
-            try {
-                $response = $sendgrid->send($email);
-            } catch (Exception $e) {
-                echo 'Caught exception: '. $e->getMessage();
-            }
+            // $email = new \SendGrid\Mail\Mail(); 
+            // $email->setFrom("xyaranzaaa@gmail.com", "Xyryl Aranza");
+            // $email->setSubject("Application Password");
+            // $email->addTo($data->email, $data->name);
+            // $email->addContent("text/plain", "This is your generated password " . $generatedPassword . ". Please change after logging in to our system.");
+            // $sendgrid = new \SendGrid(getenv('SENDGRID_API_KEY'));
+            // try {
+            //     $response = $sendgrid->send($email);
+            // } catch (Exception $e) {
+            //     echo 'Caught exception: '. $e->getMessage();
+            // }
+
+            try{
+                # Instantiate the client.
+                $mgClient = Mailgun::create(getenv('MAILGUN_API_KEY'), getenv('MAILGUN_HOSTNAME'));
+                $domain = getenv('MAILGUN_DOMAIN');
+                $params = array(
+                  'from'    => 'Xyryl Aranza <sigh.real.xa@gmail.com>',
+                  'to'      => $data->email,
+                  'subject' => 'Application Password',
+                  'text'    => "This is your generated password " . $generatedPassword . ". Please change after logging in to our system."
+                );
+                
+                # Make the call to the client.
+                $mgClient->messages()->send($domain, $params);
+                }catch(Exception $e){
+                    echo 'Caught exception: '. $e->getMessage();
+                }
+
 
             $result = $user->readUser();
 

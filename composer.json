@@ -2,7 +2,12 @@
     "require": {
         "cloudinary/cloudinary_php": "dev-master",
         "firebase/php-jwt": "^5.2",
-        "sendgrid/sendgrid": "~7"
+        "sendgrid/sendgrid": "~7",
+        "mailgun/mailgun-php": "^3.0",
+        "php-http/guzzle6-adapter": "^2.0",
+        "php-http/message": "^1.8",
+        "kriswallsmith/buzz": "^1.1",
+        "nyholm/psr7": "^1.3"
 
     }
 }
