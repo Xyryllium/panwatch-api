@@ -60,7 +60,8 @@ class User{
                     mobileNumber = :contactInfo,
                     password = :password,
 					address = :address,
-					email = :email";
+                    email = :email,
+                    hasTemporaryPassword = 1";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);
@@ -120,6 +121,48 @@ class User{
         //prepare the query
         $stmt = $this->conn->prepare($query);
         
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function readUserPassword(){
+        $query = "SELECT password FROM " . $this->table . " 
+                WHERE id = :id";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+        
+        //sanitize
+        $this->id = htmlspecialchars(strip_tags($this->id));
+
+        //bind the value
+        $stmt->bindParam(':id', $this->id);
+
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+    }
+
+    public function updatePassword(){
+        $query = "UPDATE " . $this->table . "
+                    SET password = :password,
+                    hasTemporaryPassword = 0
+                WHERE id = :id";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+        
+        //sanitize
+        $this->id = htmlspecialchars(strip_tags($this->id));
+        $this->password = htmlspecialchars(strip_tags($this->password));
+
+        //bind the value
+        $stmt->bindParam(':id', $this->id);
+        $stmt->bindParam(':password', $this->password);
+
         //execute the query
         $stmt->execute();
 
