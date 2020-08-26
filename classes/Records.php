@@ -118,6 +118,7 @@ class Records{
 					a.location, 
 					a.dateContacted, 
 					a.timeContacted,
+					a.duration as timeContactedEnded,
 					b.type 
 					FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
 					ON a.typeId = b.id
@@ -138,6 +139,7 @@ class Records{
 					a.location, 
 					a.dateContacted, 
 					a.timeContacted,
+					a.duration as timeContactedEnded,
 					b.type FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
 					ON a.typeId = b.id WHERE a.userId = "  . $this->id. " AND b.type = " . $this->type ." ";
 
