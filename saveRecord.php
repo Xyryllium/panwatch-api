@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $records->location      = $data->location;
     $records->dateContacted = date('Y-m-d h:i:s', strtotime($data->dateContacted));
     $records->timeContacted = date('Y-m-d h:i:s', strtotime($data->timeContacted));
-    $records->duration      = $data->timeContactedEnded;
+    $records->duration      = date('Y-m-d h:i:s', strtotime($data->timeContactedEnded));
     $records->contactInfo   = $data->contactInfo;
     $records->address       = $data->address;
     $records->type          = $data->type;
