@@ -57,24 +57,6 @@ else{
                 echo 'Caught exception: '. $e->getMessage();
             }
 
-            // try{
-            //     # Instantiate the client.
-            //     $mgClient = Mailgun::create(getenv('MAILGUN_API_KEY'), getenv('MAILGUN_HOSTNAME'));
-            //     $domain = getenv('MAILGUN_DOMAIN');
-            //     $params = array(
-            //       'from'    => 'Xyryl Aranza <sigh.real.xa@gmail.com>',
-            //       'to'      => $data->email,
-            //       'subject' => 'Application Password',
-            //       'text'    => "This is your generated password " . $generatedPassword . ". Please change after logging in to our system."
-            //     );
-                
-            //     # Make the call to the client.
-            //     $mgClient->messages()->send($domain, $params);
-            //     }catch(Exception $e){
-            //         echo 'Caught exception: '. $e->getMessage();
-            //     }
-
-
             $result = $user->readUser();
 
             while($data = $result->fetch(PDO::FETCH_ASSOC)){
@@ -113,7 +95,7 @@ else{
 
                 $jwt = JWT::encode($payload_info, $secret_key, 'HS512');
                 
-                $data_info = ["token" => $jwt, "user" => $user];
+                $data_info = ["token" => $jwt, "user" => $user, "hasTemporaryPassword" => true];
                 
                 http_response_code(200);
                 //convert to JSON output
