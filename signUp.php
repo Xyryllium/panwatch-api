@@ -10,6 +10,7 @@ header("Access-Control-Allow-Methods: POST");
 
 // files needed to connect to database
 include_once 'database.php';
+include_once 'timezone.php';
 include_once './classes/User.php';
 
 // get database connection

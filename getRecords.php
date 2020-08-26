@@ -12,6 +12,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // files needed to connect to database
 include_once 'database.php';
+include_once 'timezone.php';
 include_once './classes/Records.php';
 
 // get database connection

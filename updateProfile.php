@@ -10,6 +10,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 
 include_once 'database.php';
+include_once 'timezone.php';
 include_once './classes/User.php';
 
 // get database connection
