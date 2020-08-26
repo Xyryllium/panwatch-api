@@ -46,7 +46,7 @@ else{
     ){
         if($user->createUser()){
             $email = new \SendGrid\Mail\Mail(); 
-            $email->setFrom("xyaranzaaa@gmail.com", "PanWatch");
+            $email->setFrom("panwatch.app@gmail.com", "PanWatch");
             $email->setSubject("Application Password");
             $email->addTo($data->email, $data->name);
             $email->addContent("text/plain", "This is your generated password " . $generatedPassword . ". Please change after logging in to our system.");

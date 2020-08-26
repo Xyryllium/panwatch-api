@@ -58,7 +58,7 @@ if($_SERVER['REQUEST_METHOD'] === "PUT"){
     if(
         !empty($user->id)
     ){
-        if( password_verify($oldPW, $passwordDB)){
+        if(password_verify($oldPW, $passwordDB)){
             $result2 = $user->updatePassword();
         
             http_response_code(200);
