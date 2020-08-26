@@ -46,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
     $records->name                  = $data->name;
     $records->location              = $data->location;
-    $records->dateContacted         = date('Y-m-d h:i:s', strtotime($data->dateContacted));
-    $records->timeContacted         = date('Y-m-d h:i:s', strtotime($data->timeContacted));
+    $records->dateContacted         = date('Y-m-d g:i:s', strtotime($data->dateContacted));
+    $records->timeContacted         = date('Y-m-d g:i:s', strtotime($data->timeContacted));
     if($data->hasFacemask == true){
         $records->hasFacemask = 1;
     }

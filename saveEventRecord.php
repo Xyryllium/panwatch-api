@@ -11,6 +11,7 @@ header("Access-Control-Allow-Headers: Content-Type, Access-Control-Allow-Headers
 
 // files needed to connect to database
 include_once 'database.php';
+include_once 'timezone.php';
 include_once './classes/Records.php';
 
 // get database connection
@@ -45,8 +46,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
 
     $records->name                  = $data->name;
     $records->location              = $data->location;
-    $records->dateContacted         = date('Y-m-d h:i:s', strtotime($data->dateContacted));
-    $records->timeContacted         = date('Y-m-d h:i:s', strtotime($data->timeContacted));
+    $records->dateContacted         = date('Y-m-d g:i:s', strtotime($data->dateContacted));
+    $records->timeContacted         = date('Y-m-d g:i:s', strtotime($data->timeContacted));
     if($data->hasFacemask == true){
         $records->hasFacemask = 1;
     }
