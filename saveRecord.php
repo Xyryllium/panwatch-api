@@ -187,7 +187,7 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
                 echo json_encode($data_info);
             } else {
                 http_response_code(503);
-                echo json_encode(array('message' => "Unable to create contact record.", 'error' => print_r($records->createRecord())));
+                echo json_encode(array('message' => "Unable to create contact record.", 'error' => var_dump($records->createRecord())));
             }
         } else {
             // set response code - 400 bad request
