@@ -47,9 +47,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
 
     $records->name          = $data->name;
     $records->location      = $data->location;
-    $records->dateContacted = date('Y-m-d g:i:s', strtotime($data->dateContacted));
-    $records->timeContacted = date('Y-m-d g:i:s', strtotime($data->timeContacted));
-    $records->duration      = date('Y-m-d g:i:s', strtotime($data->timeContactedEnded));
+    $records->dateContacted = date('Y-m-d H:i:s', strtotime($data->dateContacted));
+    $records->timeContacted = date('Y-m-d H:i:s', strtotime($data->timeContacted));
+    $records->duration      = date('Y-m-d H:i:s', strtotime($data->timeContactedEnded));
     $records->contactInfo   = $data->contactInfo;
     $records->address       = $data->address;
     $records->type          = $data->type;
@@ -199,4 +199,9 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         }
     }
 } else {
+    // set response code - 400 bad request
+    http_response_code(400);
+
+    // tell the user
+    echo json_encode(array("message" => "Invalid Request."));
 }
