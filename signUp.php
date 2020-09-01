@@ -68,7 +68,8 @@ else{
                     "address" => $address,
                     "email" => $email,
                     "avatar" => $avatar,
-                    "mobileNumber" => $mobileNumber
+                    "mobileNumber" => $mobileNumber,
+                    "hasTemporaryPassword" => true
                 );
 
                 $info = array(
@@ -96,7 +97,7 @@ else{
 
                 $jwt = JWT::encode($payload_info, $secret_key, 'HS512');
                 
-                $data_info = ["token" => $jwt, "user" => $user, "hasTemporaryPassword" => true];
+                $data_info = ["token" => $jwt, "user" => $user];
                 
                 http_response_code(200);
                 //convert to JSON output

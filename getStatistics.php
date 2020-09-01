@@ -47,15 +47,24 @@ if($_SERVER['REQUEST_METHOD'] === "GET"){
     
 
     $records->type = 1;
+    
     $result = $records->readStatistics();
 
     //get the row count
     $num = $result->rowCount();
 
+    $personCount = 0;
+
     if($num > 0){
         $data_info = array();
 
-        $data = $result->fetch(PDO::FETCH_ASSOC);
+        $personRecord = $result->fetch(PDO::FETCH_ASSOC);
+
+        $resultForAttendees = $records->readStatisticsInAttendees();
+
+        $attendeeRecord = $resultForAttendees->fetch(PDO::FETCH_ASSOC);
+
+        $personCount = $personRecord["stats"] + $attendeeRecord["attendees"];
 
         $records->type = 2;
         $result2 = $records->readStatistics();
@@ -67,7 +76,7 @@ if($_SERVER['REQUEST_METHOD'] === "GET"){
 
         $data3 =$result3->fetch(PDO::FETCH_ASSOC);
 
-        $data_info [] = array("recordedPersonToday" => $data["stats"], "recordedEstablishmentToday" => $data2["stats"], "recordedEventToday" => $data3["stats"]);
+        $data_info [] = array("recordedPersonToday" => $personCount, "recordedEstablishmentToday" => (int)$data2["stats"], "recordedEventToday" => (int)$data3["stats"]);
 
         http_response_code(200);
         //convert to JSON output

@@ -4,6 +4,7 @@ class Records{
     private $conn;
 	private $table = "contact_records";
 	private $tableContactType = "contact_type";
+	private $tableAttendees= "event_attendees";
 	
     //object properties
 	public $id;
@@ -20,6 +21,7 @@ class Records{
 	public $hasSocialDistancing;
 	public $attendees;
 	public $limit;
+	public $event_id;
 
 
 
@@ -33,13 +35,9 @@ class Records{
 		if(($this->type == 'person')) {
 			$addQuery = "address = :address";
 		}
-        if(($this->type == 'establishment')){
-            $addQuery = "hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck";
+        if(($this->type == 'establishment' || $this->type == 'event')){
+            $addQuery = "hasTemperatureCheck = :hasTemperatureCheck";
 		}
-		if(($this->type == 'event')){
-			$addQuery = "hasSocialDistancing = :hasSocialDistancing , hasTemperatureCheck = :hasTemperatureCheck,
-							attendees = :attendees";
-        }
         $query = "INSERT INTO " . $this->table . "
                     SET
                     name = :name,
@@ -52,6 +50,7 @@ class Records{
 					duration = :duration,
 					contactInfo = :contactInfo,
 					typeId = :type,
+					hasSocialDistancing = :hasSocialDistancing,
 					{$addQuery}";
 
         //prepare the query
@@ -68,6 +67,7 @@ class Records{
 		$this->duration = htmlspecialchars(strip_tags($this->duration));
 		$this->contactInfo = htmlspecialchars(strip_tags($this->contactInfo));
 		$this->type = htmlspecialchars(strip_tags($this->type));
+		$this->hasSocialDistancing = htmlspecialchars(strip_tags($this->hasSocialDistancing));
 
 		//bind the value
         $stmt->bindParam(':name', $this->name);
@@ -78,37 +78,63 @@ class Records{
         $stmt->bindParam(':hasFacemask', $this->hasFacemask);
         $stmt->bindParam(':hasFaceshield', $this->hasFaceshield);
         $stmt->bindParam(':duration', $this->duration);
-        $stmt->bindParam(':contactInfo', $this->contactInfo);
+		$stmt->bindParam(':contactInfo', $this->contactInfo);
+		$stmt->bindParam(':hasSocialDistancing', $this->hasSocialDistancing);
 
 		if(($this->type == 'person')) {
 			$type = 1;
 			$stmt->bindParam(':type', $type);
 			$this->address = htmlspecialchars(strip_tags($this->address));
 			$stmt->bindParam(':address', $this->address);
+			
 		}
 		if(($this->type == "establishment")) {
 			$type = 2;
 			$stmt->bindParam(':type', $type);
-			$this->hasSocialDistancing = htmlspecialchars(strip_tags($this->hasSocialDistancing));
 			$this->hasTemperatureCheck = htmlspecialchars(strip_tags($this->hasTemperatureCheck));
-			$stmt->bindParam(':hasSocialDistancing', $this->hasSocialDistancing);
 			$stmt->bindParam(':hasTemperatureCheck', $this->hasTemperatureCheck);
 		}
 		if(($this->type == "event")) {
 			$type = 3;
 			$stmt->bindParam(':type', $type);
-			$this->hasSocialDistancing = htmlspecialchars(strip_tags($this->hasSocialDistancing));
 			$this->hasTemperatureCheck = htmlspecialchars(strip_tags($this->hasTemperatureCheck));
-			$this->attendees = htmlspecialchars(strip_tags($this->attendees));
-			$stmt->bindParam(':hasSocialDistancing', $this->hasSocialDistancing);
 			$stmt->bindParam(':hasTemperatureCheck', $this->hasTemperatureCheck);
-			$stmt->bindParam(':attendees', $this->attendees);
 		}
 
         //execute the query
         if($stmt->execute()){
             return true;
 		}
+        return false;
+	}
+	
+	public function createAttendees(){
+
+        $query = "INSERT INTO " . $this->tableAttendees . "
+                    SET
+                    name = :name,
+                    user_id = :id,
+                    event_id = :event_id";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+        
+        //sanitize
+        $this->attendees = htmlspecialchars(strip_tags($this->attendees));
+		$this->id = htmlspecialchars(strip_tags($this->id));
+        $this->event_id = htmlspecialchars(strip_tags($this->event_id));
+
+        //bind the value
+        $stmt->bindParam(':name', $this->attendees);
+        $stmt->bindParam(':id', $this->id);
+		$stmt->bindParam(':event_id', $this->event_id);
+        
+
+        //execute the query
+        if($stmt->execute()){
+            return true;
+        }
+        
         return false;
     }
 
@@ -122,7 +148,7 @@ class Records{
 					b.type 
 					FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
 					ON a.typeId = b.id
-					WHERE a.userId = ". $this->id." ";
+					WHERE a.userId = ". $this->id." ORDER BY dateContacted DESC, timeContacted DESC ";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);
@@ -171,9 +197,36 @@ class Records{
 
         return $stmt;
 	}
+
+	public function readNameOfAttendees(){
+		$query = "SELECT c.name
+					FROM " . $this->table. " as a 
+					LEFT JOIN " . $this->tableAttendees ." as c ON a.id = c.event_id
+					WHERE a.userId = ". $this->id ." and c.event_id = ". $this->event_id ." ";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+	}
 	
 	public function readStatistics(){
         $query = "SELECT COUNT(id) as stats FROM " . $this->table. " WHERE userId = "  . $this->id. " AND typeId = " . $this->type ." ";
+
+        //prepare the query
+        $stmt = $this->conn->prepare($query);
+
+        //execute the query
+        $stmt->execute();
+
+        return $stmt;
+	}
+	
+	public function readStatisticsInAttendees(){
+        $query = "SELECT COUNT(id) as attendees FROM " . $this->tableAttendees. " WHERE user_id = "  . $this->id. "";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);

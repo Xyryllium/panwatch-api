@@ -51,7 +51,6 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
     $records->timeContacted = date('Y-m-d H:i:s', strtotime($data->timeContacted));
     $records->duration      = date('Y-m-d H:i:s', strtotime($data->timeContactedEnded));
     $records->contactInfo   = $data->contactInfo;
-    $records->address       = $data->address;
     $records->type          = $data->type;
 
     if ($data->hasFacemask == true) {
@@ -63,140 +62,79 @@ if ($_SERVER['REQUEST_METHOD'] === "POST") {
         $records->hasFaceshield = 1;
     } else
         $records->hasFaceshield = 0;
+    
+    if ($data->hasSocialDistancing == true) {
+        $records->hasSocialDistancing = 1;
+    } else
+        $records->hasSocialDistancing = 0;
 
     if ($records->type === 'establishment' || $records->type === 'event') {
-        if ($data->hasSocialDistancing == true) {
-            $records->hasSocialDistancing = 1;
-        } else
-            $records->hasSocialDistancing = 0;
-
         if ($data->hasTemperatureCheck == true) {
             $records->hasTemperatureCheck = 1;
         }
     }
 
-    if ($records->type === 'event') {
-        if (is_array($data->attendees)) {
-            $counter = 0;
-            foreach ($data->attendees as $row => $value) {
-                $records->attendees = $value;
-                $counter++;
-                // make sure data is not empty
-                if (
-                    !empty($records->name) &&
-                    !empty($records->location) &&
-                    !empty($records->id) &&
-                    !empty($records->dateContacted) &&
-                    !empty($records->timeContacted) &&
-                    !empty($records->duration)
-                ) {
-                    if ($records->createRecord()) {
+    if($records->type === 'person'){
+        $records->address = $data->address;
+    }
 
-                        end($data->attendees);
-                        if ($row === key($data->attendees)) {
+    if($records->type === 'event'){
+        $attendees = "";
+        $attendees = $data->attendees;
+    }
 
-                            $records->limit = $counter;
 
-                            $result = $records->readLastRecord();
+    
+    
+    // make sure data is not empty
+    if (
+        !empty($records->name) &&
+        !empty($records->location) &&
+        !empty($records->id) &&
+        !empty($records->dateContacted) &&
+        !empty($records->timeContacted) &&
+        !empty($records->duration)
+    ) {
+        $data_info = array();
 
-                            $data_info = array();
+        if ($records->createRecord()) {
 
-                            while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
-                                $data_info[] = $data;
-                            }
+            if ($records->type === 'event') {
+                $records->limit = 1;
+                $resultForEventID = $records->readLastRecord();
 
-                            http_response_code(201);
-                            //convert to JSON output
-                            echo json_encode($data_info);
-                        }
-                    } else {
-                        end($data->attendees);
-                        if ($row === key($data->attendees)) {
-                            http_response_code(503);
-                            echo json_encode(array('message' => "Unable to create contact record."));
-                        }
+                $data = $resultForEventID->fetch(PDO::FETCH_ASSOC);
+                $records->event_id = $data['_id'];
+
+                if (is_array($attendees)) {
+                    $counter = 0;
+                    foreach ($attendees as $row => $value) {
+                        $records->attendees = $value;
+                        $counter++;
+                        $records->createAttendees();
                     }
-                } else {
-                    // set response code - 400 bad request
-                    http_response_code(400);
-
-                    // tell the user
-                    echo json_encode(array("message" => "Unable to create contact record. Data is incomplete."));
-                }
+                } 
             }
+            $records->limit = 1;
+            $result = $records->readLastRecord();
+
+            while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
+                $data_info[] = $data;
+            }          
+
+            http_response_code(201);
+            //convert to JSON output
+            echo json_encode($data_info);
         } else {
-            // make sure data is not empty
-            if (
-                !empty($records->name) &&
-                !empty($records->location) &&
-                !empty($records->id) &&
-                !empty($records->dateContacted) &&
-                !empty($records->timeContacted) &&
-                !empty($records->duration)
-            ) {
-                if ($records->createRecord()) {
-
-                    $records->limit = 1;
-
-                    $result = $records->readLastRecord();
-
-                    $data_info = array();
-
-                    while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
-                        $data_info[] = $data;
-                    }
-
-                    http_response_code(201);
-                    //convert to JSON output
-                    echo json_encode($data_info);
-                } else {
-                    http_response_code(503);
-                    echo json_encode(array('message' => "Unable to create contact record."));
-                }
-            } else {
-                // set response code - 400 bad request
-                http_response_code(400);
-
-                // tell the user
-                echo json_encode(array("message" => "Unable to create contact record. Data is incomplete."));
-            }
+            http_response_code(503);
+            echo json_encode(array('message' => "Unable to create contact record.", 'error' => var_dump($records->createRecord())));
         }
     } else {
-        // make sure data is not empty
-        if (
-            !empty($records->name) &&
-            !empty($records->location) &&
-            !empty($records->id) &&
-            !empty($records->dateContacted) &&
-            !empty($records->timeContacted) &&
-            !empty($records->duration)
-        ) {
-            if ($records->createRecord()) {
+        // set response code - 400 bad request
+        http_response_code(400);
 
-                $records->limit = 1;
-
-                $result = $records->readLastRecord();
-
-                $data_info = array();
-
-                while ($data = $result->fetch(PDO::FETCH_ASSOC)) {
-                    $data_info[] = $data;
-                }
-
-                http_response_code(201);
-                //convert to JSON output
-                echo json_encode($data_info);
-            } else {
-                http_response_code(503);
-                echo json_encode(array('message' => "Unable to create contact record.", 'error' => var_dump($records->createRecord())));
-            }
-        } else {
-            // set response code - 400 bad request
-            http_response_code(400);
-
-            // tell the user
-            echo json_encode(array("message" => "Unable to create contact record. Data is incomplete."));
-        }
+        // tell the user
+        echo json_encode(array("message" => "Unable to create contact record. Data is incomplete."));
     }
 } else {
     // set response code - 400 bad request
