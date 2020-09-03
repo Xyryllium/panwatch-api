@@ -45,7 +45,8 @@ if($_SERVER['REQUEST_METHOD'] === "POST"){
                     "address" => $address,
                     "email" => $email,
                     "avatar" => $avatar,
-                    "mobileNumber" => $mobileNumber
+                    "mobileNumber" => $mobileNumber,
+                    "hasTemporaryPassword" => $hasTemporaryPassword == 1 ? true : false
                 );
 
                 $info = array(

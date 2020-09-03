@@ -148,7 +148,7 @@ class Records{
 					b.type 
 					FROM " . $this->table. " as a LEFT JOIN " . $this->tableContactType. " as b
 					ON a.typeId = b.id
-					WHERE a.userId = ". $this->id." ORDER BY dateContacted DESC, timeContacted DESC ";
+					WHERE a.userId = ". $this->id." ORDER BY DATE(dateContacted) DESC, timeContacted DESC ";
 
         //prepare the query
         $stmt = $this->conn->prepare($query);
